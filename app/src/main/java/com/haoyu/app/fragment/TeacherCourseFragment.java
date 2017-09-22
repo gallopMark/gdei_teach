@@ -6,11 +6,21 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Layout;
 import android.view.View;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.haoyu.app.activity.AppSurveyHomeActivity;
+import com.haoyu.app.activity.AppTestHomeActivity;
+import com.haoyu.app.activity.AppTestResultActivity;
+import com.haoyu.app.activity.CoursewareEditorActivity;
+import com.haoyu.app.activity.CoursewareFileActivity;
+import com.haoyu.app.activity.CoursewareLinkActivity;
+import com.haoyu.app.activity.TeachingDiscussionActivity;
+import com.haoyu.app.activity.TestAssignmentActivity;
+import com.haoyu.app.activity.VideoPlayerActivity;
 import com.haoyu.app.adapter.CourseActivityAdapter;
 import com.haoyu.app.adapter.CourseStudyAdapter;
 import com.haoyu.app.base.BaseFragment;
@@ -214,6 +224,31 @@ public class TeacherCourseFragment extends BaseFragment {
                 enterActivity(activity);
             }
         });
+        sectionAdapter.setOnItemLongClickListener(new CourseStudyAdapter.OnItemLongClickListener() {
+            @Override
+            public void onItemLongClick(TextView tv, CharSequence charSequence) {
+                if (overLine(tv)) {
+                    MaterialDialog dialog = new MaterialDialog(context);
+                    dialog.setTitle(null);
+                    dialog.setMessage(charSequence);
+                    dialog.setCanceledOnTouchOutside(true);
+                    dialog.setCancelable(true);
+                    dialog.setPositiveButton("关闭", null);
+                    dialog.show();
+                }
+            }
+        });
+    }
+
+    private boolean overLine(TextView tv) {
+        Layout layout = tv.getLayout();
+        if (layout != null && layout.getLineCount() > 0) {
+            int lines = layout.getLineCount();//获取textview行数
+            if (layout.getEllipsisCount(lines - 1) > 0) {//获取最后一行省略掉的字符数，大于0就代表超过行数
+                return true;
+            }
+        }
+        return false;
     }
 
     private void updateAT(final List<CourseSectionActivity> mDatas) {
@@ -316,7 +351,7 @@ public class TeacherCourseFragment extends BaseFragment {
         if (response.getResponseData() != null && response.getResponseData().getmVideoUser() != null) {  //教学视频
             AppActivityViewEntity.VideoUserMobileEntity videoEntity = response.getResponseData().getmVideoUser();
             VideoMobileEntity video = videoEntity.getmVideo();
-            Intent intent = new Intent(context, com.haoyu.app.activity.VideoPlayerActivity.class);
+            Intent intent = new Intent(context, VideoPlayerActivity.class);
             if (activity.getmTimePeriod() != null && activity.getmTimePeriod().getState() != null && activity.getmTimePeriod().getState().equals("进行中"))
                 intent.putExtra("running", true);
             else if (activity.getmTimePeriod() != null && activity.getmTimePeriod().getMinutes() > 0)
@@ -399,18 +434,18 @@ public class TeacherCourseFragment extends BaseFragment {
                     && mTextInfoUser.getmTextInfo().getType().equals("file")) {  //课件类型为pdf文件
                 String pdfUrl = mTextInfoUser.getmTextInfo().getPdfUrl();
                 intent.putExtra("file", pdfUrl);
-                intent.setClass(context, com.haoyu.app.activity.CoursewareFileActivity.class);
+                intent.setClass(context, CoursewareFileActivity.class);
                 startActivityForResult(intent, STUDY_CODE);
             } else if (mTextInfoUser.getmTextInfo() != null && mTextInfoUser.getmTextInfo().getType() != null
                     && mTextInfoUser.getmTextInfo().getType().equals("link")) {  //课件类型为外链
                 String webUrl = mTextInfoUser.getmTextInfo().getContent();
-                intent.setClass(context, com.haoyu.app.activity.CoursewareLinkActivity.class);
+                intent.setClass(context, CoursewareLinkActivity.class);
                 intent.putExtra("link", webUrl);
                 startActivityForResult(intent, STUDY_CODE);
             } else if (mTextInfoUser.getmTextInfo() != null && mTextInfoUser.getmTextInfo().getType() != null
                     && mTextInfoUser.getmTextInfo().getType().equals("editor")) {  // 课件类型为文本
                 String editor = mTextInfoUser.getmTextInfo().getContent();
-                intent.setClass(context, com.haoyu.app.activity.CoursewareEditorActivity.class);
+                intent.setClass(context, CoursewareEditorActivity.class);
                 intent.putExtra("editor", editor);
                 startActivityForResult(intent, STUDY_CODE);
             } else {
@@ -423,7 +458,7 @@ public class TeacherCourseFragment extends BaseFragment {
 
     private void openDiscussion(AppActivityViewResult response, CourseSectionActivity activity) {
         if (response.getResponseData() != null && response.getResponseData().getmDiscussionUser() != null) {
-            Intent intent = new Intent(context, com.haoyu.app.activity.TeachingDiscussionActivity.class);
+            Intent intent = new Intent(context, TeachingDiscussionActivity.class);
             if (activity.getmTimePeriod() != null && activity.getmTimePeriod().getState() != null && activity.getmTimePeriod().getState().equals("进行中"))
                 intent.putExtra("running", true);
             else if (activity.getmTimePeriod() != null && activity.getmTimePeriod().getMinutes() > 0)
@@ -451,7 +486,7 @@ public class TeacherCourseFragment extends BaseFragment {
 
     /*打开问卷调查*/
     private void openSurvey(AppActivityViewResult response, CourseSectionActivity activity) {
-        Intent intent = new Intent(context, com.haoyu.app.activity.AppSurveyHomeActivity.class);
+        Intent intent = new Intent(context, AppSurveyHomeActivity.class);
         if (activity.getmTimePeriod() != null && activity.getmTimePeriod().getState() != null && activity.getmTimePeriod().getState().equals("进行中"))
             intent.putExtra("running", true);
         else if (activity.getmTimePeriod() != null && activity.getmTimePeriod().getMinutes() > 0)
@@ -491,16 +526,16 @@ public class TeacherCourseFragment extends BaseFragment {
             if (response.getResponseData().getmActivityResult() != null) {
                 intent.putExtra("score", response.getResponseData().getmActivityResult().getScore());
             }
-            intent.setClass(context, com.haoyu.app.activity.AppTestResultActivity.class);
+            intent.setClass(context, AppTestResultActivity.class);
         } else {
-            intent.setClass(context, com.haoyu.app.activity.AppTestHomeActivity.class);
+            intent.setClass(context, AppTestHomeActivity.class);
         }
         startActivityForResult(intent, STUDY_CODE);
     }
 
     /*打开作业*/
     private void openAssignMent(CourseSectionActivity activity) {
-        Intent intent = new Intent(context, com.haoyu.app.activity.TestAssignmentActivity.class);
+        Intent intent = new Intent(context, TestAssignmentActivity.class);
         if (activity.getmTimePeriod() != null && activity.getmTimePeriod().getState() != null && activity.getmTimePeriod().getState().equals("进行中"))
             intent.putExtra("running", true);
         else if (activity.getmTimePeriod() != null && activity.getmTimePeriod().getMinutes() > 0)
