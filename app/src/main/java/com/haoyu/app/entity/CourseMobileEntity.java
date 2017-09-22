@@ -33,16 +33,16 @@ public class CourseMobileEntity implements Serializable {
     private String type;
     @SerializedName("code")
     @Expose
-    private String code;  //课程编码
+    private String code;
     @SerializedName("termNo")
     @Expose
-    private String termNo; //期编码
+    private String termNo;
     @SerializedName("intro")
     @Expose
     private String intro;
-    @SerializedName("timePeriod")
+    @SerializedName("mTimePeriod")
     @Expose
-    private TimePeriod timePeriod;
+    private TimePeriod mTimePeriod;
     @SerializedName("mSections")
     @Expose
     private List<CourseSectionEntity> mSections = new ArrayList<>();
@@ -164,11 +164,11 @@ public class CourseMobileEntity implements Serializable {
         this.termNo = termNo;
     }
 
-    public TimePeriod getTimePeriod() {
-        return timePeriod;
+    public TimePeriod getmTimePeriod() {
+        return mTimePeriod;
     }
 
-    public void setTimePeriod(TimePeriod timePeriod) {
-        this.timePeriod = timePeriod;
+    public void setmTimePeriod(TimePeriod mTimePeriod) {
+        this.mTimePeriod = mTimePeriod;
     }
 }
