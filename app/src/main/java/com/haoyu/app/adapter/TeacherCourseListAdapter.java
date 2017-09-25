@@ -57,10 +57,10 @@ public class TeacherCourseListAdapter extends BaseArrayRecyclerAdapter<CourseMob
             codeStr += "/" + entity.getTermNo();
         }
         course_code.setText(codeStr);
-        if (entity.getTimePeriod() != null) {
-            course_period.setText("开课：" + TimeUtil.getSlashDate(entity.getTimePeriod().getStartTime()));
+        if (entity.getmTimePeriod() != null) {
+            course_period.setText("开课：" + TimeUtil.getSlashDate(entity.getmTimePeriod().getStartTime()));
             course_state.setVisibility(View.VISIBLE);
-            if (entity.getTimePeriod().getEndTime() >= System.currentTimeMillis()) {
+            if (entity.getmTimePeriod().getEndTime() >= System.currentTimeMillis()) {
                 course_state.setText("进行中");
             } else {
                 course_state.setText("已结束");
