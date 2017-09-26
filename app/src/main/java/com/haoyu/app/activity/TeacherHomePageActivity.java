@@ -123,11 +123,11 @@ public class TeacherHomePageActivity extends BaseActivity implements View.OnClic
                 , R.drawable.user_default, R.drawable.user_default, iv_userIco);
         iv_userIco.setOnClickListener(context);
         tv_userName = menuView.findViewById(R.id.tv_userName);
+        tv_deptName = menuView.findViewById(R.id.tv_deptName);
         if (TextUtils.isEmpty(getRealName()))
             tv_userName.setText("请填写用户名");
         else
             tv_userName.setText(getRealName());
-        tv_deptName = menuView.findViewById(R.id.tv_deptName);
         if (TextUtils.isEmpty(getDeptName()))
             tv_deptName.setText("请选择单位");
         else
