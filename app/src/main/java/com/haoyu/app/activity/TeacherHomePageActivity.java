@@ -1,11 +1,11 @@
 package com.haoyu.app.activity;
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,7 +15,6 @@ import com.haoyu.app.adapter.TeacherCourseListAdapter;
 import com.haoyu.app.adapter.TeacherWorkShopListAdater;
 import com.haoyu.app.base.BaseActivity;
 import com.haoyu.app.basehelper.BaseRecyclerAdapter;
-import com.haoyu.app.dialog.MaterialDialog;
 import com.haoyu.app.entity.CaptureResult;
 import com.haoyu.app.entity.CourseMobileEntity;
 import com.haoyu.app.entity.TeacherHomePageResult;
@@ -25,7 +24,6 @@ import com.haoyu.app.imageloader.GlideImgManager;
 import com.haoyu.app.rxBus.MessageEvent;
 import com.haoyu.app.utils.Action;
 import com.haoyu.app.utils.Constants;
-import com.haoyu.app.utils.MPermissionUtils;
 import com.haoyu.app.utils.OkHttpClientManager;
 import com.haoyu.app.view.FullyLinearLayoutManager;
 import com.haoyu.app.view.LoadFailView;
@@ -49,7 +47,7 @@ import okhttp3.Request;
  * 描述:
  * 作者:马飞奔 Administrator
  */
-public class TeacherHomePageActivity extends BaseActivity implements View.OnClickListener, MPermissionUtils.OnPermissionListener {
+public class TeacherHomePageActivity extends BaseActivity implements View.OnClickListener {
     private TeacherHomePageActivity context = this;
     @BindView(R.id.toggle)
     ImageView toggle;
@@ -58,7 +56,6 @@ public class TeacherHomePageActivity extends BaseActivity implements View.OnClic
     @BindView(R.id.iv_scan)
     View iv_scan;
     private SlidingMenu menu;
-    private View MenuView;
     private ImageView iv_userIco;   //侧滑菜单用户头像
     private TextView tv_userName;   //侧滑菜单用户名
     private TextView tv_deptName;   //侧滑菜单用户部门名称
@@ -90,7 +87,7 @@ public class TeacherHomePageActivity extends BaseActivity implements View.OnClic
 
     @Override
     public void initView() {
-        menu = new SlidingMenu(this);
+        menu = new SlidingMenu(context);
         menu.setMode(SlidingMenu.LEFT);
         // 设置触摸屏幕的模式
         menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
@@ -100,10 +97,9 @@ public class TeacherHomePageActivity extends BaseActivity implements View.OnClic
         // 设置渐入渐出效果的值
         menu.setFadeDegree(0.35f);
         menu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
-        //为侧滑菜单设置布局
-        MenuView = getLayoutInflater().inflate(R.layout.app_homepage_menu, null);
-        initMenuView(MenuView);
-        menu.setMenu(MenuView);
+        View menuView = LayoutInflater.from(context).inflate(R.layout.app_homepage_menu, null);
+        initMenuView(menuView);
+        menu.setMenu(menuView);
         FullyLinearLayoutManager courseManager = new FullyLinearLayoutManager(context);
         courseManager.setOrientation(FullyLinearLayoutManager.VERTICAL);
         courseRV.setLayoutManager(courseManager);
@@ -120,25 +116,31 @@ public class TeacherHomePageActivity extends BaseActivity implements View.OnClic
     }
 
     private void initMenuView(View menuView) {
-        View ll_userInfo = getView(menuView, R.id.ll_userInfo);
+        View ll_userInfo = menuView.findViewById(R.id.ll_userInfo);
         ll_userInfo.setOnClickListener(context);
-        iv_userIco = getView(menuView, R.id.iv_userIco);
+        iv_userIco = menuView.findViewById(R.id.iv_userIco);
         GlideImgManager.loadCircleImage(context, getAvatar()
                 , R.drawable.user_default, R.drawable.user_default, iv_userIco);
         iv_userIco.setOnClickListener(context);
-        tv_userName = getView(menuView, R.id.tv_userName);
-        tv_userName.setText(getRealName());
-        tv_deptName = getView(menuView, R.id.tv_deptName);
-        tv_deptName.setText(getDeptName());
-        TextView tv_education = getView(menuView, R.id.tv_education);
+        tv_userName = menuView.findViewById(R.id.tv_userName);
+        if (TextUtils.isEmpty(getRealName()))
+            tv_userName.setText("请填写用户名");
+        else
+            tv_userName.setText(getRealName());
+        tv_deptName = menuView.findViewById(R.id.tv_deptName);
+        if (TextUtils.isEmpty(getDeptName()))
+            tv_deptName.setText("请选择单位");
+        else
+            tv_deptName.setText(getDeptName());
+        TextView tv_education = menuView.findViewById(R.id.tv_education);
         tv_education.setOnClickListener(context);
-        TextView tv_teaching = getView(menuView, R.id.tv_teaching);
+        TextView tv_teaching = menuView.findViewById(R.id.tv_teaching);
         tv_teaching.setOnClickListener(context);
-        TextView tv_message = getView(menuView, R.id.tv_message);
+        TextView tv_message = menuView.findViewById(R.id.tv_message);
         tv_message.setOnClickListener(context);
-        TextView tv_consulting = getView(menuView, R.id.tv_consulting);
+        TextView tv_consulting = menuView.findViewById(R.id.tv_consulting);
         tv_consulting.setOnClickListener(context);
-        TextView tv_settings = getView(menuView, R.id.tv_settings);
+        TextView tv_settings = menuView.findViewById(R.id.tv_settings);
         tv_settings.setOnClickListener(context);
     }
 
@@ -229,14 +231,14 @@ public class TeacherHomePageActivity extends BaseActivity implements View.OnClic
     }
 
     private final static int SCANNIN_GREQUEST_CODE = 1;
-    private final static int CAMERA_OK = 2;
 
     @Override
     public void onClick(View v) {
         Intent intent = new Intent();
         switch (v.getId()) {
             case R.id.iv_scan:
-                checkSelfPermission();
+                intent.setClass(context, AppCaptureActivity.class);
+                startActivityForResult(intent, SCANNIN_GREQUEST_CODE);
                 break;
             case R.id.iv_msg:
 
@@ -276,48 +278,6 @@ public class TeacherHomePageActivity extends BaseActivity implements View.OnClic
                 intent.setClass(context, SettingActivity.class);
                 startActivity(intent);
         }
-    }
-
-    private void checkSelfPermission() {
-        MPermissionUtils.requestPermissionsResult(context, CAMERA_OK, new String[]{android.Manifest.permission.CAMERA}, context);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        MPermissionUtils.onRequestPermissionsResult(requestCode, permissions, grantResults, context);
-    }
-
-    @Override
-    public void onPermissionGranted() {
-        //说明已经获取到摄像头权限了 想干嘛干嘛
-        Intent intent = new Intent(context, AppCaptureActivity.class);
-        startActivityForResult(intent, SCANNIN_GREQUEST_CODE);
-    }
-
-    @Override
-    public void onPermissionDenied() {
-        showTipsDialog();
-    }
-
-    private void showTipsDialog() {
-        MaterialDialog dialog = new MaterialDialog(context);
-        dialog.setTitle("温馨提示");
-        dialog.setMessage("当前应用缺少相机权限，相机功能暂时无法使用。如若需要，请单击【设置】按钮前往设置中心进行权限授权。");
-        dialog.setNegativeButton("取消", new MaterialDialog.ButtonClickListener() {
-            @Override
-            public void onClick(View v, AlertDialog dialog) {
-
-            }
-        });
-        dialog.setPositiveButton("设置", new MaterialDialog.ButtonClickListener() {
-            @Override
-            public void onClick(View v, AlertDialog dialog) {
-                MPermissionUtils.startAppSettings(context);
-            }
-        });
-        dialog.setNegativeTextColor(ContextCompat.getColor(context, R.color.gray_text));
-        dialog.setPositiveTextColor(ContextCompat.getColor(context, R.color.defaultColor));
-        dialog.show();
     }
 
     @Override
