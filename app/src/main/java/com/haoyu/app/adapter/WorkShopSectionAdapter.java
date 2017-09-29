@@ -97,10 +97,6 @@ public class WorkShopSectionAdapter extends BaseArrayRecyclerAdapter<MWorkshopSe
             atRecyclerView.setFocusable(false);
             WorkShopAtAdapter adapter = new WorkShopAtAdapter(entity.getActivities(), position);
             atRecyclerView.setAdapter(adapter);
-            if (entity.getActivities() != null && entity.getActivities().size() > 0)
-                iv_isExpand.setVisibility(View.VISIBLE);
-            else
-                iv_isExpand.setVisibility(View.GONE);
             if (arrayMap.get(position) != null && arrayMap.get(position)) {
                 atRecyclerView.setVisibility(View.VISIBLE);
                 iv_isExpand.setImageResource(R.drawable.course_dictionary_xiala);
