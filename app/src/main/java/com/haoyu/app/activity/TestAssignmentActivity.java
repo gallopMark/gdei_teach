@@ -3,6 +3,7 @@ package com.haoyu.app.activity;
 import android.content.Intent;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -206,8 +207,7 @@ public class TestAssignmentActivity extends BaseActivity implements OnClickListe
         mResult = response;
         if (response.getResponseData() != null && response.getResponseData().getmActivityResult() != null) {
             // 作业描述内容
-           // assignmenttitle.setText(response.getResponseData().getmActivityResult().getmActivity().getTitle());
-            toolBar.setTitle_text(response.getResponseData().getmActivityResult().getmActivity().getTitle());
+            toolBar.setTitle_text(Html.fromHtml(response.getResponseData().getmActivityResult().getmActivity().getTitle()).toString());
             state = response.getResponseData().getmActivityResult().getState();
             //作业得分
             detailMap = response.getResponseData().getmActivityResult().getDetailMap();
