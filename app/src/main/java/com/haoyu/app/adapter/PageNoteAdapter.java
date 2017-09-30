@@ -17,6 +17,7 @@ import java.util.List;
  * 作者:马飞奔 Administrator
  */
 public class PageNoteAdapter extends BaseArrayRecyclerAdapter<NoteEntity> {
+
     public PageNoteAdapter(List<NoteEntity> dataList) {
         super(dataList);
     }
