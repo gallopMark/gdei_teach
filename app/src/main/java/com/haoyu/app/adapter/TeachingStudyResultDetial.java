@@ -6,14 +6,11 @@ import android.text.Spanned;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-
 import com.haoyu.app.basehelper.BaseArrayRecyclerAdapter;
-
 import com.haoyu.app.entity.MEvaluateEntity;
 import com.haoyu.app.gdei.teacher.R;
 import com.haoyu.app.imageloader.GlideImgManager;
 import com.haoyu.app.utils.TimeUtil;
-import com.haoyu.app.view.StarBar;
 
 import java.util.List;
 
@@ -45,7 +42,7 @@ public class TeachingStudyResultDetial extends BaseArrayRecyclerAdapter<MEvaluat
         if (entity.getCreator() != null && entity.getCreator().getRealName() != null) {
             tv_name.setText(entity.getCreator().getRealName());
         } else {
-            tv_name.setText("匿名用户");
+            tv_name.setText("");
         }
         if (entity.getComment() != null) {
             Spanned spanned = Html.fromHtml(entity.getComment());
