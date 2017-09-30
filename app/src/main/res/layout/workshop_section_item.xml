@@ -163,7 +163,6 @@
                         android:layout_weight="1"
                         android:drawablePadding="@dimen/margin_size_6"
                         android:drawableTop="@drawable/teach_video"
-                        android:drawableTop="@drawable/workshop_teachvideo"
                         android:gravity="center"
                         android:text="教学观摩"
                         android:textSize="@dimen/font_size_14" />
@@ -176,7 +175,6 @@
                         android:layout_weight="1"
                         android:drawablePadding="@dimen/margin_size_6"
                         android:drawableTop="@drawable/teach_study"
-                        android:drawableTop="@drawable/workshop_teachstudy"
                         android:gravity="center"
                         android:text="听课评课"
                         android:textSize="@dimen/font_size_14" />
