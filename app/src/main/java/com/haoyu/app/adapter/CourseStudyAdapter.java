@@ -44,7 +44,6 @@ import java.util.Map;
  * 作者:马飞奔 Administrator
  */
 public class CourseStudyAdapter extends BaseArrayRecyclerAdapter<MultiItemEntity> {
-
     private Context context;
     public static final int TYPE_LEVEL_0 = 0;
     public static final int TYPE_LEVEL_1 = 1;
