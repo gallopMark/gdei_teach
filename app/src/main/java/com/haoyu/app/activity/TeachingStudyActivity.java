@@ -125,6 +125,7 @@ public class TeachingStudyActivity extends BaseActivity implements View.OnClickL
     private AppCommentAdapter adapter;
     private List<CommentEntity> mComments = new ArrayList<>();
     private int replyPosition, childPosition;
+    private String activityTitle;
 
     @Override
     public int setLayoutResID() {
@@ -133,6 +134,7 @@ public class TeachingStudyActivity extends BaseActivity implements View.OnClickL
 
     @Override
     public void initView() {
+        activityTitle = getIntent().getStringExtra("activityTitle");
         running = getIntent().getBooleanExtra("running", false);
         timePeriod = (TimePeriod) getIntent().getSerializableExtra("timePeriod");
         workshopId = getIntent().getStringExtra("workshopId");
@@ -149,8 +151,7 @@ public class TeachingStudyActivity extends BaseActivity implements View.OnClickL
     }
 
     private void setSupportToolbar() {
-        String activityTitle = getIntent().getStringExtra("activityTitle");
-        toolBar.setTitle_text(activityTitle);
+        toolBar.setTitle_text("听课评课");
         toolBar.setOnLeftClickListener(new AppToolBar.OnLeftClickListener() {
             @Override
             public void onLeftClick(View view) {
@@ -181,7 +182,8 @@ public class TeachingStudyActivity extends BaseActivity implements View.OnClickL
             ll_insert.setVisibility(View.VISIBLE);
             ll_detail.setVisibility(View.GONE);
         }
-        tv_study_title.setText(lcecEntity.getTitle());
+        if (lcecEntity.getTitle() != null)
+            tv_study_title.setText(Html.fromHtml(lcecEntity.getTitle()));
         tv_content.setHtml(lcecEntity.getContent(), new HtmlHttpImageGetter(tv_content, Constants.REFERER));
         ll_evaluation.setOnClickListener(new View.OnClickListener() {
             private boolean isExpand = true;
@@ -495,9 +497,9 @@ public class TeachingStudyActivity extends BaseActivity implements View.OnClickL
                 if (NetStatusUtil.isConnected(context)) {
                     if (NetStatusUtil.isWifi(context)) {
                         intent.setClass(context, VideoPlayerActivity.class);
-                        if (lcecEntity.getmVideo().getFileName() != null) {
-                            intent.putExtra("fileName", lcecEntity.getmVideo().getFileName());
-                        }
+
+                        intent.putExtra("activityTitle", activityTitle);
+
                         intent.putExtra("videoUrl", lcecEntity.getmVideo().getUrl());
                         startActivity(intent);
                     } else {
