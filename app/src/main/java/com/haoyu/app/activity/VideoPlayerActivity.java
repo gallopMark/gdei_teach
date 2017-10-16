@@ -484,11 +484,7 @@ public class VideoPlayerActivity extends BaseActivity implements View.OnClickLis
         RecyclerView recyclerView = getView(view, R.id.recyclerView);
         if (summary != null) {
             read_guide_content.setText(summary);
-        } else {
-            read_guide_content.setText("暂无内容");
         }
-
-
         if (mFileInfoList.size() > 0) {
             LinearLayoutManager manager = new LinearLayoutManager(context);
             manager.setOrientation(LinearLayoutManager.VERTICAL);
