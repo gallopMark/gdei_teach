@@ -14,6 +14,7 @@ import com.google.gson.Gson;
 import com.haoyu.app.adapter.TeacherCourseListAdapter;
 import com.haoyu.app.adapter.TeacherWorkShopListAdater;
 import com.haoyu.app.base.BaseActivity;
+import com.haoyu.app.base.BaseResponseResult;
 import com.haoyu.app.basehelper.BaseRecyclerAdapter;
 import com.haoyu.app.entity.CaptureResult;
 import com.haoyu.app.entity.CourseMobileEntity;
@@ -337,15 +338,27 @@ public class TeacherHomePageActivity extends BaseActivity implements View.OnClic
     }
 
     private void parseCaptureResult(String result) {
-        try {
-            Gson gson = new Gson();
-            CaptureResult mCaptureResult = gson.fromJson(result, CaptureResult.class);
-            String qtId = mCaptureResult.getQtId();
-            String service = mCaptureResult.getService();
-            String url = Constants.LOGIN_URL;
-            login(url, qtId, service);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (result.contains("qtId") && result.contains("service")) {   //扫一扫登录
+            try {
+                Gson gson = new Gson();
+                CaptureResult mCaptureResult = gson.fromJson(result, CaptureResult.class);
+                String qtId = mCaptureResult.getQtId();
+                String service = mCaptureResult.getService();
+                String url = Constants.LOGIN_URL;
+                login(url, qtId, service);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if ((result.startsWith("http") || result.startsWith("https"))) {  //扫一扫签到
+            if (result.contains(Constants.REFERER))
+                signedOn(result);
+            else {
+                Intent intent = new Intent(context, WebActivity.class);
+                intent.putExtra("url", result);
+                startActivity(intent);
+            }
+        } else {
+            showMaterialDialog("扫描结果", result);
         }
     }
 
@@ -374,6 +387,34 @@ public class TeacherHomePageActivity extends BaseActivity implements View.OnClic
                         toast(context, "验证失败");
                     }
                 });
+    }
+
+    private void signedOn(String url) {
+        addSubscription(OkHttpClientManager.getAsyn(context, url, new OkHttpClientManager.ResultCallback<BaseResponseResult>() {
+            @Override
+            public void onBefore(Request request) {
+                showTipDialog();
+            }
+
+            @Override
+            public void onError(Request request, Exception e) {
+                hideTipDialog();
+                onNetWorkError(context);
+            }
+
+            @Override
+            public void onResponse(BaseResponseResult response) {
+                hideTipDialog();
+                if (response != null && response.getResponseCode() != null && response.getResponseCode().equals("00")) {
+                    toast(context, "签到成功");
+                } else {
+                    if (response != null && response.getResponseMsg() != null)
+                        toast(context, response.getResponseMsg());
+                    else
+                        toast(context, "签到失败");
+                }
+            }
+        }));
     }
 
     private long mExitTime = 0;
