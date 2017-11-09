@@ -1,5 +1,6 @@
 package com.haoyu.app.activity;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -16,17 +17,21 @@ import com.haoyu.app.adapter.TeacherWorkShopListAdater;
 import com.haoyu.app.base.BaseActivity;
 import com.haoyu.app.base.BaseResponseResult;
 import com.haoyu.app.basehelper.BaseRecyclerAdapter;
+import com.haoyu.app.dialog.MaterialDialog;
 import com.haoyu.app.entity.CaptureResult;
 import com.haoyu.app.entity.CourseMobileEntity;
 import com.haoyu.app.entity.MobileUser;
 import com.haoyu.app.entity.TeacherHomePageResult;
 import com.haoyu.app.entity.UserInfoResult;
+import com.haoyu.app.entity.VersionEntity;
 import com.haoyu.app.entity.WorkShopMobileEntity;
 import com.haoyu.app.gdei.teacher.R;
 import com.haoyu.app.imageloader.GlideImgManager;
 import com.haoyu.app.rxBus.MessageEvent;
+import com.haoyu.app.service.DownloadService;
 import com.haoyu.app.utils.Action;
 import com.haoyu.app.utils.Constants;
+import com.haoyu.app.utils.MyUtils;
 import com.haoyu.app.utils.OkHttpClientManager;
 import com.haoyu.app.view.FullyLinearLayoutManager;
 import com.haoyu.app.view.LoadFailView;
@@ -34,6 +39,7 @@ import com.haoyu.app.view.LoadingView;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.uuzuche.lib_zxing.activity.CodeUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -116,6 +122,7 @@ public class TeacherHomePageActivity extends BaseActivity implements View.OnClic
         courseRV.setNestedScrollingEnabled(false);
         workshopRV.setNestedScrollingEnabled(false);
         registRxBus();
+        getVersion();
     }
 
     private void initMenuView(View menuView) {
@@ -441,6 +448,59 @@ public class TeacherHomePageActivity extends BaseActivity implements View.OnClic
         } else if (event.action.equals(Action.CHANGE_DEPT_NAME) && event.obj != null && event.obj instanceof String) {
             String deptName = (String) event.obj;
             tv_deptName.setText(deptName);
+        }
+    }
+
+    private void getVersion() {
+
+        addSubscription(OkHttpClientManager.getAsyn(context, Constants.updateUrl, new OkHttpClientManager.ResultCallback<VersionEntity>() {
+            @Override
+            public void onError(Request request, Exception e) {
+
+            }
+
+            @Override
+            public void onResponse(VersionEntity versionEntity) {
+                specifyApkVersion(versionEntity);
+            }
+        }));
+    }
+
+    private void alertVersionUpdate(final VersionEntity versionEntity) {
+        final MaterialDialog materialDialog = new MaterialDialog(context);
+        materialDialog.setMessage(versionEntity.getUpdateLog());
+        materialDialog.setTitle("发现新版本");
+        materialDialog.setNegativeButton("稍后下载", new MaterialDialog.ButtonClickListener() {
+            @Override
+            public void onClick(View v, AlertDialog dialog) {
+                materialDialog.dismiss();
+            }
+        });
+        materialDialog.setPositiveButton("立即下载", new MaterialDialog.ButtonClickListener() {
+            @Override
+            public void onClick(View v, AlertDialog dialog) {
+                Intent intent = new Intent(context, DownloadService.class);
+                intent.putExtra("url", versionEntity.getDownurl());
+                intent.putExtra("versionCode", versionEntity.getVersionCode());
+
+                startService(intent);
+            }
+        });
+        materialDialog.show();
+    }
+
+
+    private void specifyApkVersion(VersionEntity versionEntity) {
+        String apkUrl = Constants.fileDownDir + "/gdei_teach_" + versionEntity.getVersionCode() + ".apk";
+        File file = new File(apkUrl);
+        if (versionEntity != null && versionEntity.getVersionCode() != null) {
+            if (!versionEntity.getVersionCode().equals(MyUtils.getVersionCode(context))) {
+                if (file.exists()) {
+                    MyUtils.installAPK(context, file);
+                } else {
+                    alertVersionUpdate(versionEntity);
+                }
+            }
         }
     }
 
