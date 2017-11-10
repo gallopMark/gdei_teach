@@ -493,15 +493,14 @@ public class TeacherHomePageActivity extends BaseActivity implements View.OnClic
     private void specifyApkVersion(VersionEntity versionEntity) {
         String apkUrl = Constants.fileDownDir + "/gdei_teach_" + versionEntity.getVersionCode() + ".apk";
         File file = new File(apkUrl);
-        if (versionEntity != null && versionEntity.getVersionCode() != null) {
-            if (!versionEntity.getVersionCode().equals(MyUtils.getVersionCode(context))) {
-                if (file.exists()) {
-                    MyUtils.installAPK(context, file);
-                } else {
-                    alertVersionUpdate(versionEntity);
-                }
+        if (versionEntity.getVersionCode() > MyUtils.getVersionCode(context)) {
+            if (file.exists()) {
+                MyUtils.installAPK(context, file);
+            } else {
+                alertVersionUpdate(versionEntity);
             }
         }
+
     }
 
     @Override
