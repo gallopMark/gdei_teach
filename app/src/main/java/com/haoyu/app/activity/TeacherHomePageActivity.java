@@ -452,7 +452,6 @@ public class TeacherHomePageActivity extends BaseActivity implements View.OnClic
     }
 
     private void getVersion() {
-
         addSubscription(OkHttpClientManager.getAsyn(context, Constants.updateUrl, new OkHttpClientManager.ResultCallback<VersionEntity>() {
             @Override
             public void onError(Request request, Exception e) {
@@ -481,7 +480,7 @@ public class TeacherHomePageActivity extends BaseActivity implements View.OnClic
             public void onClick(View v, AlertDialog dialog) {
                 Intent intent = new Intent(context, DownloadService.class);
                 intent.putExtra("url", versionEntity.getDownurl());
-                intent.putExtra("versionCode", versionEntity.getVersionCode());
+                intent.putExtra("versionName", versionEntity.getVersionName());
 
                 startService(intent);
             }
@@ -489,9 +488,8 @@ public class TeacherHomePageActivity extends BaseActivity implements View.OnClic
         materialDialog.show();
     }
 
-
     private void specifyApkVersion(VersionEntity versionEntity) {
-        String apkUrl = Constants.fileDownDir + "/gdei_teach_" + versionEntity.getVersionCode() + ".apk";
+        String apkUrl = Constants.fileDownDir + "/gdei_teach_" + versionEntity.getVersionName() + ".apk";
         File file = new File(apkUrl);
         if (versionEntity.getVersionCode() > MyUtils.getVersionCode(context)) {
             if (file.exists()) {
@@ -500,12 +498,6 @@ public class TeacherHomePageActivity extends BaseActivity implements View.OnClic
                 alertVersionUpdate(versionEntity);
             }
         }
-
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unsubscribe();
-    }
 }

@@ -88,8 +88,7 @@ public final class MyUtils {
             decorView.setSystemUiVisibility(uiOptions);
         }
     }
-
-
+    
     public static int getVersionCode(Context context) {
         PackageManager packageManager = context.getPackageManager();
         PackageInfo packageInfo;
