@@ -43,7 +43,6 @@ public class DownloadService extends Service {
         versionName = intent.getStringExtra("versionName");
         fileName = "gdei_teach_" + versionName + ".apk";
         savePath = Constants.fileDownDir;
-
         download(url, savePath, fileName);
         notification();
         time = System.currentTimeMillis();
@@ -94,7 +93,7 @@ public class DownloadService extends Service {
 
     private void notification() {
         builder =
-                new NotificationCompat.Builder(this,null);
+                new NotificationCompat.Builder(this, null);
         builder.setSmallIcon(R.drawable.gdei_logo_t);
         remoteViews = new RemoteViews(getPackageName(), R.layout.notification_layout);
         remoteViews.setImageViewResource(R.id.iv_icon, R.drawable.gdei_logo_t);

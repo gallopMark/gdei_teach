@@ -132,7 +132,7 @@ public class StudentAssignmentActivity extends BaseActivity implements View.OnCl
     }
 
     public void initData() {
-        String url = Constants.OUTRT_NET + "/master_" + workShopId + "/m/workshop_user/" + workShopId + "/students?page=" + page;
+        String url = Constants.OUTRT_NET + "/master_" + workShopId + "/m/workshop_user/" + workShopId + "/students?page=" + page+ "&limit=20";
         OkHttpClientManager.getAsyn(context, url, new OkHttpClientManager.ResultCallback<ManagementMemberResult>() {
 
             @Override
